@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/frz_button" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
