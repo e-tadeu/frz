@@ -37,9 +37,9 @@ As zonas de restrição seguem as diretrizes estabelecidas pela **ICA 100-40**, 
 ## Autor
 
 **Edson Tadeu da Silva Pinto**
+
 Engenheiro Cartógrafo | Capitão do Exército Brasileiro
+
 Desenvolvido no âmbito de estudos e aplicações em geotecnologias e segurança do espaço aéreo.
+
 &copy;2011-2019 GeoApt LLC - geoapt.com 
-</p>
-</body>
-</html>
