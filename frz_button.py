@@ -73,6 +73,12 @@ class frzPlugin:
         pr.addAttributes([QgsField("limite_voo_proibido", QVariant.String)])
         frz.updateFields()
 
+        # Definição dos estilos
+        plugin_dir = os.path.dirname(__file__)
+        frz_qml_path = os.path.join(plugin_dir, 'frz.qml')
+        runway_qml_path = os.path.join(plugin_dir, 'runway.qml')
+
+
         #1. Criação de um buffer planar de 150 em torno da linha da pista, a ICA amarrada uma pista com largura de 300m
         runway =  processing.run("native:buffer", 
                                  {'INPUT':layer,
@@ -85,7 +91,10 @@ class frzPlugin:
                                   'SEPARATE_DISJOINT':False,
                                   'OUTPUT':'TEMPORARY_OUTPUT'})['OUTPUT']
         runway.setName('Runway')
+        runway.loadNamedStyle(runway_qml_path)
+        runway.triggerRepaint()
         QgsProject.instance().addMapLayer(runway)
+
 
         #2. Criação dos buffers de zona de restrição
         """
@@ -297,7 +306,10 @@ class frzPlugin:
                 #nova_feat.setAttributes(buffer_feat.attributes())
                 frz.dataProvider().addFeature(nova_feat)
         frz.updateExtents()
+        frz.loadNamedStyle(frz_qml_path)
+        frz.triggerRepaint()
         QgsProject.instance().addMapLayer(frz)
+
         iface.messageBar().pushMessage('A camada de Zonas de Restrição de Voo para Drones foi criada com sucesso.', level=Qgis.Success, duration = 10)
 
     def angle_of_line(self, line_geom):
