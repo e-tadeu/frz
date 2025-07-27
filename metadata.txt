@@ -1,19 +1,15 @@
-# This file contains metadata for your plugin.
-
-# This file should be included when you package your plugin.# Mandatory items:
-
 [general]
-name=frz_button
+name=FRZ
 qgisMinimumVersion=3.0
-description=Este plugin cria zonas de restrição de voo para drones
-version=0.1
+description=Cria zonas de restrição de voo para drones conforme a norma ICA 100-40 da Força Aérea Brasileira.
+version=1.0
 author=Edson Tadeu da Silva Pinto
 email=e.tadeu.eb@ime.eb.br
 
-about=Este plugin cria zonas de restrição de voo para drones conforme ICA 100-40
+about=Cria zonas de restrição de voo para drones ao redor de pista de aeródromos conforme os parâmetros estabelecidos pela ICA 100-40 da Força Aérea Brasileira. O plugin é executado por meio de um botão na interface do QGIS, com base na feição selecionada e em um sistema de coordenadas projetado (UTM).
 
 tracker=http://bugs
-repository=http://repo
+repository=https://github.com/e-tadeu/frz.git
 # End of mandatory metadata
 
 # Recommended items:
@@ -23,7 +19,7 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags=python,drones,restricao,ICA100-40,espaco-aereo,qgis
 
 homepage=http://homepage
 category=Plugins
