@@ -21,9 +21,6 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Estrutura base de um plugin QGIS com botão, chamando "gerar zonas de restrição de voo"
-
-# frz_plugin.py
 import os
 import math
 import processing
