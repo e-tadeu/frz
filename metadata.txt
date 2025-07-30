@@ -1,6 +1,6 @@
 [general]
 name=FRZ
-qgisMinimumVersion=3.0
+qgisMinimumVersion=3.10
 description=Cria zonas de restrição de voo para drones conforme a norma ICA 100-40 da Força Aérea Brasileira.
 version=1.0
 author=Edson Tadeu da Silva Pinto
