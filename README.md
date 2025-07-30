@@ -32,7 +32,7 @@ As zonas de restrição seguem as diretrizes estabelecidas pela **ICA 100-40**, 
 
 ## Licença
 
-[MIT](LICENSE)
+Este plugin é licenciado sob os termos da licença MIT.
 
 ## Autor
 
@@ -42,4 +42,4 @@ Engenheiro Cartógrafo | Capitão do Exército Brasileiro
 
 Desenvolvido no âmbito de estudos e aplicações em geotecnologias e segurança do espaço aéreo.
 
-&copy;2011-2019 GeoApt LLC - geoapt.com 
++ &copy;2025 Edson Tadeu da Silva Pinto
