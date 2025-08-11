@@ -4,9 +4,9 @@ Este plugin para QGIS permite a criação automatizada de zonas de restrição d
 
 ## Funcionalidades
 
-* Geração de zonas de restrição com buffers concêntricos ao pista de aeródromo.
+* Geração de zonas de restrição com buffers concêntricos ao redor de pista de aeródromo e de helipontos.
 * Interface intuitiva com botão de execução direto na barra de ferramentas do QGIS.
-* Compatível com sistemas de coordenadas projetadas (UTM).
+* Compatível com sistemas de coordenadas projetadas.
 
 ## Requisitos
 
@@ -22,9 +22,9 @@ Este plugin para QGIS permite a criação automatizada de zonas de restrição d
 ## Como Usar
 
 1. Carregue suas camadas de interesse (por exemplo, camadas de pontos de interesse e da área geográfica a ser analisada).
-2. Selecione uma feição da camada base (pista de aeródromo).
+2. Selecione uma feição da camada base (pista de aeródromo ou heliponto).
 3. Clique no botão do plugin para executar a criação das zonas.
-4. A camada gerada aparecerá no painel de camadas com o nome apropriado.
+4. A camada gerada aparecerá no painel de camadas com o nome apropriado.   
 
 ## Referência Normativa
 
