@@ -2,12 +2,12 @@
 name=FRZ
 qgisMinimumVersion=3.10
 description=Cria zonas de restrição de voo para drones conforme a norma ICA 100-40 da Força Aérea Brasileira.
-version=1.0
+version=1.1.0
 author=Edson Tadeu da Silva Pinto
 email=e.tadeu.eb@ime.eb.br
 license=MIT
 
-about=Cria zonas de restrição de voo para drones ao redor de pista de aeródromos conforme os parâmetros estabelecidos pela ICA 100-40 da Força Aérea Brasileira. O plugin é executado por meio de um botão na interface do QGIS, com base na feição selecionada e em um sistema de coordenadas projetado (UTM).
+about=Cria zonas de restrição de voo para drones ao redor de pista de aeródromos e de helipontos conforme os parâmetros estabelecidos pela ICA 100-40 da Força Aérea Brasileira. O plugin é executado por meio de um botão na interface do QGIS, com base na feição selecionada e em um sistema de coordenadas projetado (UTM).
 
 repository=https://github.com/e-tadeu/frz.git
 tracker=https://github.com/e-tadeu/frz/issues
