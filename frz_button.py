@@ -44,28 +44,48 @@ class frzPlugin:
         self.plugin_dir = os.path.dirname(__file__)
 
     def initGui(self):
-        self.action = QAction(QIcon(os.path.join(self.plugin_dir, "icon.png")),
-                              "Gerar Zonas de Restrição de Voo de Drones", self.iface.mainWindow())
+
+        #Botão de pista
+        self.action = QAction(QIcon(os.path.join(self.plugin_dir, "icon_pista.png")),
+                              "Gerar Zonas de Restrição de Voo de Drones em Aeródromos", self.iface.mainWindow())
         self.action.triggered.connect(self.run_zonas)
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu("FRZ", self.action)
+
+        #Botão de heliponto
+        self.action_heli = QAction(QIcon(os.path.join(self.plugin_dir, "icon_heli.png")),
+                              "Gerar Zonas de Restrição de Voo de Drones em Helipontos", self.iface.mainWindow())
+        self.action_heli.triggered.connect(self.run_zonas_heliponto)
+        self.iface.addToolBarIcon(self.action_heli)
+        self.iface.addPluginToMenu("FRZ", self.action_heli)
 
     def unload(self):
         self.iface.removeToolBarIcon(self.action)
         self.iface.removePluginMenu("FRZ", self.action)
 
+        self.iface.removeToolBarIcon(self.action_heli)
+        self.iface.removePluginMenu("FRZ", self.action_heli)
+
     def run_zonas(self):
         layer = self.iface.activeLayer()
-        if not layer or layer.selectedFeatureCount() != 1:
-            QMessageBox.warning(None, "FRZ", "Selecione uma única feição de pista.")
+        if not layer or layer.selectedFeatureCount() < 1:
+            QMessageBox.warning(None, "FRZ", "Selecione ao menos uma feição de pista.")
             return
 
-        feat = layer.selectedFeatures()[0]
-        self.gerar_zonas(layer, feat)
+        layer = processing.run(
+            "native:saveselectedfeatures",
+            {
+                "INPUT": layer,
+                "OUTPUT": "memory:feicao_selecionada"
+            }
+        )['OUTPUT']
 
-    def gerar_zonas(self, layer, feat):
+        #feat = layer.selectedFeatures()[0]
+        self.gerar_zonas(layer) #, feat)
+
+    def gerar_zonas(self, layer): #, feat):
         # Criação de camada de Zonas de Restrição de Voo de Drone
-        frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Zonas de Restrição de Voo de Drones", "memory")
+        frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Zonas de Restrição de Voo de Drones em Aeródromos", "memory")
         pr = frz.dataProvider()
         pr.addAttributes([QgsField("limite_voo_proibido", QVariant.String)])
         frz.updateFields()
@@ -341,3 +361,100 @@ class frzPlugin:
         points.append(center)  # fecha o polígono de volta no centro
 
         return QgsGeometry.fromPolygonXY([points])
+    
+    def run_zonas_heliponto(self):
+        layer = self.iface.activeLayer()
+        if not layer or layer.selectedFeatureCount() < 1:
+            QMessageBox.warning(None, "FRZ", "Selecione ao menos uma feição de heliponto.")
+            return
+
+        layer = processing.run(
+            "native:saveselectedfeatures",
+            {
+                "INPUT": layer,
+                "OUTPUT": "memory:feicao_selecionada"
+            }
+        )['OUTPUT']
+
+        #feat = layer.selectedFeatures()[0]
+        self.gerar_zonas_heliponto(layer) #, feat)
+
+
+    def gerar_zonas_heliponto(self, layer): #, feat):
+        # Criação de camada de Zonas de Restrição de Voo de Drone para Heliponto
+        frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Zonas de Restrição de Voo de Drones em Helipontos", "memory")
+        pr = frz.dataProvider()
+        pr.addAttributes([QgsField("limite_voo_proibido", QVariant.String)])
+        frz.updateFields()
+
+        # Definição dos estilos
+        plugin_dir = os.path.dirname(__file__)
+        frz_qml_path = os.path.join(plugin_dir, 'frz.qml')
+        heli_qml_path = os.path.join(plugin_dir, 'heli.qml')
+
+
+        #1. Aplicação da simbologia de heliponto
+        heliponto = layer
+        heliponto.setName('Heliponto')
+        heliponto.loadNamedStyle(heli_qml_path)
+        heliponto.triggerRepaint()
+        QgsProject.instance().addMapLayer(heliponto)
+
+
+        #2. Criação dos buffers de zona de restrição
+        """
+            As restrições obedecem ao previsto na ICA 100-40
+        """
+        lista_restricoes = [3570, 2960, 2350, 1740]
+
+        lista_voo_proibido = ['FRZ', '≤ 100ft', '≤ 200ft', '≤ 300ft', '≤ 400ft']
+
+        restricao_vector = QgsVectorLayer(f"Polygon?crs=" + layer.crs().authid(), "buffer", "memory")
+        restricao_vector.dataProvider().addAttributes(layer.fields())
+        restricao_vector.dataProvider().addAttributes([QgsField("limite_voo_proibido", QVariant.String)])
+        restricao_vector.updateFields()
+
+        for feat in layer.getFeatures():
+            geom = feat.geometry()
+            cont = len(lista_voo_proibido)-2
+            for restricao in lista_restricoes:
+
+                restricao_buffer_geom = geom.buffer(restricao, 8)
+                restricao_feat = QgsFeature()
+                restricao_feat.setGeometry(restricao_buffer_geom)
+
+                restricao_atri = feat.attributes()
+                restricao_atri.append(lista_voo_proibido[cont])
+
+                restricao_feat.setAttributes(restricao_atri)
+
+                restricao_vector.dataProvider().addFeatures([restricao_feat])
+                restricao_vector.updateExtents()
+
+                cont-=1
+        
+        #3. Criação das zonas de restrição por anéis
+        for feat in restricao_vector.getFeatures():
+            geom = feat.geometry()
+            area = geom.area()
+
+            if feat["limite_voo_proibido"] == 'FRZ':
+                for feicao in layer.getFeatures():
+                    geom = geom.difference(feicao.geometry())
+            else:
+            # Subtrai todas as geometrias menores da mesma zona
+                for feicao in restricao_vector.getFeatures():
+                    if feicao.id() != feat.id():
+                        outra_geom = feicao.geometry()
+                        if outra_geom.area() < area:
+                            geom = geom.difference(outra_geom)
+                        
+            nova_feat = QgsFeature()
+            nova_feat.setGeometry(geom)
+            nova_feat.setAttributes([feat["limite_voo_proibido"]])
+            frz.dataProvider().addFeatures([nova_feat])
+
+        frz.updateExtents()
+        frz.loadNamedStyle(frz_qml_path)
+        frz.triggerRepaint()
+        QgsProject.instance().addMapLayer(frz)
