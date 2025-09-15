@@ -11,3 +11,11 @@
 - As zonas são criadas a partir da feição selecionada, gerando buffers concêntricos com atributos específicos de limite de voo proibido.
 - Inclusão de simbologia dedicada para helipontos e ajustes no processamento para garantir exclusividade da feição selecionada.
 - Melhorias gerais na usabilidade e mensagens de feedback ao usuário.
+
+## [1.1.1] - 2025-08-11
+- Added a warning to check if the layer is in a projected coordinate system (e.g., UTM).
+- Fixed helipad symbology.
+- Implemented geometry type validation:
+    - Helipads require a Point layer type.
+    - Airfields require a Line layer type.
+- Processing is automatically stopped if the requirements are not met.
