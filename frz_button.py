@@ -47,14 +47,14 @@ class frzPlugin:
 
         #Botão de pista
         self.action = QAction(QIcon(os.path.join(self.plugin_dir, "icon_pista.png")),
-                              "Gerar Zonas de Restrição de Voo de Drones em Aeródromos", self.iface.mainWindow())
+                              "Generate Drone Flight Restriction Zones at Airfields", self.iface.mainWindow())
         self.action.triggered.connect(self.run_zonas)
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu("FRZ", self.action)
 
         #Botão de heliponto
         self.action_heli = QAction(QIcon(os.path.join(self.plugin_dir, "icon_heli.png")),
-                              "Gerar Zonas de Restrição de Voo de Drones em Helipontos", self.iface.mainWindow())
+                              "Generate Drone Flight Restriction Zones on Helipads", self.iface.mainWindow())
         self.action_heli.triggered.connect(self.run_zonas_heliponto)
         self.iface.addToolBarIcon(self.action_heli)
         self.iface.addPluginToMenu("FRZ", self.action_heli)
@@ -68,8 +68,8 @@ class frzPlugin:
 
     def run_zonas(self):
         layer = self.iface.activeLayer()
-        if not layer or layer.selectedFeatureCount() < 1:
-            QMessageBox.warning(None, "FRZ", "Selecione ao menos uma feição de pista.")
+        if not layer or layer.selectedFeatureCount() != 1:
+            QMessageBox.warning(None, "FRZ", "Select one, and only one, airport feature.")
             return
 
         layer = processing.run(
@@ -104,7 +104,7 @@ class frzPlugin:
         else:
                 
             # Criação de camada de Zonas de Restrição de Voo de Drone
-            frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Zonas de Restrição de Voo de Drones em Aeródromos", "memory")
+            frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Drone Flight Restriction Zones at Airfield", "memory")
             pr = frz.dataProvider()
             pr.addAttributes([QgsField("limite_voo_proibido", QVariant.String)])
             frz.updateFields()
@@ -357,7 +357,7 @@ class frzPlugin:
         return math.atan2(dy, dx)  # ângulo em radianos
    
     def perpendicular_direction(self, angle_rad, side='left'):
-    # Retorna ângulo perpendicular (90º) à esquerda ou direita da direção
+        # Retorna ângulo perpendicular (90º) à esquerda ou direita da direção
         if side == 'left':
             return angle_rad + math.pi / 2
         else:
@@ -383,8 +383,8 @@ class frzPlugin:
     
     def run_zonas_heliponto(self):
         layer = self.iface.activeLayer()
-        if not layer or layer.selectedFeatureCount() < 1:
-            QMessageBox.warning(None, "FRZ", "Selecione ao menos uma feição de heliponto.")
+        if not layer or layer.selectedFeatureCount() != 1:
+            QMessageBox.warning(None, "FRZ", "Select one, and only one, helipad feature.")
             return
 
         layer = processing.run(
@@ -395,9 +395,7 @@ class frzPlugin:
             }
         )['OUTPUT']
 
-        #feat = layer.selectedFeatures()[0]
-        self.gerar_zonas_heliponto(layer) #, feat)
-
+        self.gerar_zonas_heliponto(layer)
 
     def gerar_zonas_heliponto(self, layer):
 
@@ -422,7 +420,7 @@ class frzPlugin:
         
         else:
             # Criação de camada de Zonas de Restrição de Voo de Drone para Heliponto
-            frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Zonas de Restrição de Voo de Drones em Helipontos", "memory")
+            frz = QgsVectorLayer("Polygon?crs=" + layer.crs().authid(), "Drone Flight Restriction Zones at Helipads", "memory")
             pr = frz.dataProvider()
             pr.addAttributes([QgsField("limite_voo_proibido", QVariant.String)])
             frz.updateFields()
@@ -432,14 +430,12 @@ class frzPlugin:
             frz_qml_path = os.path.join(plugin_dir, 'frz.qml')
             heli_qml_path = os.path.join(plugin_dir, 'heli.qml')
 
-
             #1. Aplicação da simbologia de heliponto
             heliponto = layer
-            heliponto.setName('Heliponto')
+            heliponto.setName('Helipad')
             heliponto.loadNamedStyle(heli_qml_path)
             heliponto.triggerRepaint()
             QgsProject.instance().addMapLayer(heliponto)
-
 
             #2. Criação dos buffers de zona de restrição
             """
